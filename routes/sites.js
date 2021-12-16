@@ -22,6 +22,7 @@ router.post('/', async(req, res) => {
     try{
         const newSite = await site.save();
         res.status(201).json(newSite);
+        createNewHTMLPage(newSite);
     }catch(err){
         res.status(400).json({message: err.message});
     }
@@ -51,6 +52,7 @@ router.delete('/:id',getSite, async (req, res) => {
     try{
         await res.site.remove();
         res.json({message: 'Site removed'});
+        deleteHTMLPage(res.site);
     }catch(err){
         res.status(500).json({message: err.message});
     }
@@ -69,4 +71,43 @@ async function getSite(req, res, next){
     res.site = site;
     next();
 }
+
+//Creating a new HTML page
+function createNewHTMLPage(site){
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname,site.name + '.html');
+    const html = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>${site.name}</title>
+    </head>
+    <body>
+        <h1>${site.name}</h1>  
+        <p>${site.description}</p>
+        <img src="${site.imageURL}" alt="${site.name}">
+    </body>
+    </html>`;
+    fs.writeFile(filePath, html, (err) => {
+        if(err){
+            console.log(err);
+        }
+    });
+}
+
+//deleting a HTML page
+function deleteHTMLPage(site){
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname,site.name + '.html');
+    fs.unlink(filePath, (err) => {
+        if(err){
+            console.log(err);
+        }
+    });
+}
+
 module.exports = router
