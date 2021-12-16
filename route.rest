@@ -1,21 +1,28 @@
-GET http://localhost:3000/subscribers
 
-
-###
-
-GET http://localhost:3000/subscribers/61bb1ac669e2313d14d23c12
-
+GET http://localhost:3000/sites
 
 ###
-
-POST http://localhost:3000/subscribers
+POST http://localhost:3000/sites
 Content-Type: application/json
 
 {
     "name": "John Doe",
-    "subscribedToChannel": "yese"
+    "description": "yese",
+    "imageURL": "yese"
 }
 
 ###
 
-DELETE http://localhost:3000/subscribers
+DELETE http://localhost:3000/sites/61bb6f939897bf612a396dfb
+
+
+### 
+
+PATCH http://localhost:3000/sites/61bb6f939897bf612a396dfb
+Content-Type: application/json
+
+{
+    "name": "John",
+    "description": "ye",
+    "imageURL": "se"
+}

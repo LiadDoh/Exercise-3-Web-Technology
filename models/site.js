@@ -1,21 +1,19 @@
 const mongoose = require('mongoose')
-const { subscribe } = require('../routes/subscribers')
 
-const subscriberSchema = new mongoose.Schema({
+const siteSchema = new mongoose.Schema({
     name:{ 
         type: String,
         required: true
 },
-subscribedToChannel:{
-    type: String,
-    required: true
+    description:{
+        type: String,
+        required: true
 
 },
-subscribeDate:{
-    type: Date,
-    required: true,
-    default: Date.now
+    imageURL:{
+        type: String,
+        required: true
 }
 })
 
-module.exports = mongoose.model('Subscriber', subscriberSchema)
+module.exports = mongoose.model('Site', siteSchema)

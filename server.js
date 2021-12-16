@@ -11,7 +11,7 @@ db.once('open', () => console.log('Connected to MongoDB'))
 
 app.use(express.json())
 
-const subscribersRouter = require('./routes/subscribers')
-app.use('/subscribers', subscribersRouter)
+const sitesRouter = require('./routes/sites')
+app.use('/sites', sitesRouter)
 
 app.listen(3000, () => {console.log('Server is running on port 3000')})

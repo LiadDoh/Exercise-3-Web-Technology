@@ -1,73 +1,72 @@
 const express = require('express');
 const router =  express.Router();
-const Subscriber = require('../models/subscriber');
+const Site = require('../models/site');
 
-//Getting all subscribers
-router.get('/',async (req, res) => {
-    try{
-        const subscribers = await Subscriber.find();
-        res.json(subscribers);
-    }catch(err){
-        res.status(500).json({message: err.message});
+// GET /api/sites
+router.get('/', async (req, res) => {
+    try {
+        const sites = await Site.find();
+        res.json(sites);
+    } catch (err) {
+        res.json({message: err});
     }
 });
 
-//Getting a single subscriber
-router.get('/:id',getSubscriber, (req, res) => {
-    res.json(res.subscriber);
-});
-
-//Creating a new subscriber
+//Creating a new site
 router.post('/', async(req, res) => {
-    const subscriber = new Subscriber({
+    const site = new Site({
         name: req.body.name,
-        subscribedToChannel: req.body.subscribedToChannel
+        description: req.body.description,
+        imageURL: req.body.imageURL
     });
     try{
-        const newSubscriber = await subscriber.save();
-        res.status(201).json(newSubscriber);
+        const newSite = await site.save();
+        res.status(201).json(newSite);
     }catch(err){
         res.status(400).json({message: err.message});
     }
 });
 
-//Updating a subscriber
-router.patch('/:id',getSubscriber, async(req, res) => {
+//Updating a site
+router.patch('/:id',getSite, async(req, res) => {
     if(req.body.name != null){
-        res.subscriber.name = req.body.name;
+        res.site.name = req.body.name;
     }
-    if(req.body.subscribedToChannel != null){
-        res.subscriber.subscribedToChannel = req.body.subscribedToChannel;
+    if(req.body.description != null){
+        res.site.description = req.body.description;
+    }
+    if(req.body.imageURL != null){
+        res.site.ImageURL = req.body.imageURL;
     }
     try{
-        const updatedSubscriber = await res.subscriber.save();
-        res.json(updatedSubscriber);
+        const updatedSite = await res.site.save();
+        res.json(updatedSite);
     }catch(err){
         res.status(400).json({message: err.message});
     }
 });
 
-//Deleting a subscriber
-router.delete('/:id',getSubscriber, async (req, res) => {
+//Deleting a site
+router.delete('/:id',getSite, async (req, res) => {
     try{
-        await res.subscriber.remove();
-        res.json({message: 'Subscriber removed'});
+        await res.site.remove();
+        res.json({message: 'Site removed'});
     }catch(err){
         res.status(500).json({message: err.message});
     }
 });
 
-async function getSubscriber(req, res, next){
-    let subscriber;
+async function getSite(req, res, next){
+    let site;
     try{
-        subscriber = await Subscriber.findById(req.params.id);
-        if(subscriber == null){
-            return res.status(404).json({message: 'Cannot find subscriber'});
+        site = await Site.findById(req.params.id);
+        if(site == null){
+            return res.status(404).json({message: 'Cannot find site'});
         }
     }catch(err){
         return res.status(500).json({message: err.message});
     }
-    res.subscriber = subscriber;
+    res.site = site;
     next();
 }
 module.exports = router
