@@ -6,14 +6,14 @@ POST http://localhost:3000/sites
 Content-Type: application/json
 
 {
-    "name": "ss",
-    "description": "Ninja Vilage",
+    "name": "Konoha",
+    "description": "yese",
     "imageURL": "yese"
 }
 
 ###
 
-DELETE http://localhost:3000/sites/61bb7b4b52110f6220d97736
+DELETE http://localhost:3000/sites/61bf804e342927febfdc5f49
 
 
 ### 

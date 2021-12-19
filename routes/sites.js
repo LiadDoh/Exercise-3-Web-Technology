@@ -96,6 +96,7 @@ function createNewHTMLPage(site){
             console.log(err);
         }
     });
+    editHTMLPage(site);
 }
 
 //deleting a HTML page
@@ -104,6 +105,38 @@ function deleteHTMLPage(site){
     const path = require('path');
     const filePath = path.join(__dirname,site.name + '.html');
     fs.unlink(filePath, (err) => {
+        if(err){
+            console.log(err);
+        }
+    });
+    editHTMLPage(site);
+}
+
+//find and edit HTML page
+async function editHTMLPage(site){
+    const sites = await Site.find();
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname,'index.html');
+    const html = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <title>Yese of Top 5 Beautiful Sites</title>
+	<meta charset = "UTF-8">
+	<meta name = "description" content = "Top 5 Most Beautiful Site">
+	<link rel = "icon" href = "./img/HomeBG.jpeg">
+	<link rel = "stylesheet" href = "./style/style.css" >
+    </head>
+    <div class="content">
+		<h1 >My Top 5 Most Beautiful Sites I Have Visited (Or Wish To Visit)</h1>
+		<ul class="list">
+        ${sites.map(site => `<li class="list-item">
+            <a href="${site.name}.html">${site.name}</a>
+        </li>`).join('')}
+		</ul>
+	</body>
+	</html>`;
+    fs.writeFile(filePath, html, (err) => {
         if(err){
             console.log(err);
         }
