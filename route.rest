@@ -6,14 +6,14 @@ POST http://localhost:3000/sites
 Content-Type: application/json
 
 {
-    "name": "Konoha",
-    "description": "yese",
-    "imageURL": "yese"
+    "name": "sese",
+    "description": "kese",
+    "imageURL": "shese"
 }
 
 ###
 
-DELETE http://localhost:3000/sites/61bf804e342927febfdc5f49
+DELETE http://localhost:3000/sites/61c364a6e4f8f74a2f8d2573
 
 
 ### 
@@ -26,3 +26,7 @@ Content-Type: application/json
     "description": "ye",
     "imageURL": "se"
 }
+
+###
+
+DELETE  http://localhost:3000/sites

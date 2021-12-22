@@ -1,82 +1,111 @@
 const express = require('express');
-const router =  express.Router();
+const router = express.Router();
 const Site = require('../models/site');
 
 // GET /api/sites
-router.get('/', async (req, res) => {
+router.get('/', async(req, res) => {
     try {
         const sites = await Site.find();
         res.json(sites);
     } catch (err) {
-        res.json({message: err});
+        res.json({
+            message: err
+        });
     }
 });
 
 //Creating a new site
-router.post('/', async(req, res) => {
+router.post('/', checkSite, async(req, res) => {
     const site = new Site({
         name: req.body.name,
         description: req.body.description,
         imageURL: req.body.imageURL
     });
-    try{
+    try {
         const newSite = await site.save();
         res.status(201).json(newSite);
         createNewHTMLPage(newSite);
-    }catch(err){
-        res.status(400).json({message: err.message});
+    } catch (err) {
+        res.status(400).json({
+            message: err.message
+        });
     }
 });
 
 //Updating a site
-router.patch('/:id',getSite, async(req, res) => {
-    if(req.body.name != null){
+router.patch('/:id', getSite, async(req, res) => {
+    if (req.body.name != null) {
         res.site.name = req.body.name;
     }
-    if(req.body.description != null){
+    if (req.body.description != null) {
         res.site.description = req.body.description;
     }
-    if(req.body.imageURL != null){
+    if (req.body.imageURL != null) {
         res.site.ImageURL = req.body.imageURL;
     }
-    try{
+    try {
         const updatedSite = await res.site.save();
         res.json(updatedSite);
-    }catch(err){
-        res.status(400).json({message: err.message});
+    } catch (err) {
+        res.status(400).json({
+            message: err.message
+        });
     }
 });
 
 //Deleting a site
-router.delete('/:id',getSite, async (req, res) => {
-    try{
+router.delete('/:id', getSite, async(req, res) => {
+    try {
         await res.site.remove();
-        res.json({message: 'Site removed'});
+        res.json({
+            message: 'Site removed'
+        });
         deleteHTMLPage(res.site);
-    }catch(err){
-        res.status(500).json({message: err.message});
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
     }
 });
 
-async function getSite(req, res, next){
+// Deletion of all sites
+router.delete('/', async(req, res) => {
+    try {
+        await Site.deleteMany();
+        res.json({
+            message: 'All sites removed'
+        });
+        deleteAllHTMLPages();
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
+    }
+});
+
+async function getSite(req, res, next) {
     let site;
-    try{
+    try {
         site = await Site.findById(req.params.id);
-        if(site == null){
-            return res.status(404).json({message: 'Cannot find site'});
+        if (site == null) {
+            return res.status(404).json({
+                message: 'Cannot find site'
+            });
         }
-    }catch(err){
-        return res.status(500).json({message: err.message});
+    } catch (err) {
+        return res.status(500).json({
+            message: err.message
+        });
     }
     res.site = site;
     next();
 }
 
 //Creating a new HTML page
-function createNewHTMLPage(site){
+function createNewHTMLPage(site) {
     const fs = require('fs');
     const path = require('path');
-    const filePath = path.join(__dirname,site.name + '.html');
+    const filePath = path.join(__dirname, site.name + '.html');
     const html = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -92,7 +121,7 @@ function createNewHTMLPage(site){
     </body>
     </html>`;
     fs.writeFile(filePath, html, (err) => {
-        if(err){
+        if (err) {
             console.log(err);
         }
     });
@@ -100,12 +129,12 @@ function createNewHTMLPage(site){
 }
 
 //deleting a HTML page
-function deleteHTMLPage(site){
+function deleteHTMLPage(site) {
     const fs = require('fs');
     const path = require('path');
-    const filePath = path.join(__dirname,site.name + '.html');
+    const filePath = path.join(__dirname, site.name + '.html');
     fs.unlink(filePath, (err) => {
-        if(err){
+        if (err) {
             console.log(err);
         }
     });
@@ -113,34 +142,72 @@ function deleteHTMLPage(site){
 }
 
 //find and edit HTML page
-async function editHTMLPage(site){
+async function editHTMLPage(site) {
     const sites = await Site.find();
     const fs = require('fs');
     const path = require('path');
-    const filePath = path.join(__dirname,'index.html');
+    const filePath = path.join(__dirname, 'index.html');
     const html = `<!DOCTYPE html>
     <html lang="en">
     <head>
     <title>Yese of Top 5 Beautiful Sites</title>
 	<meta charset = "UTF-8">
 	<meta name = "description" content = "Top 5 Most Beautiful Site">
-	<link rel = "icon" href = "./img/HomeBG.jpeg">
-	<link rel = "stylesheet" href = "./style/style.css" >
+	<link rel = "icon"	href="https://upload.wikimedia.org/wikipedia/commons/b/b2/Sevel_Logo.png">
+	<link rel = "stylesheet" href = "./style.css" >
     </head>
-    <div class="content">
+    <body>
+    <div class = "index_container">
 		<h1 >My Top 5 Most Beautiful Sites I Have Visited (Or Wish To Visit)</h1>
 		<ul class="list">
         ${sites.map(site => `<li class="list-item">
             <a href="${site.name}.html">${site.name}</a>
         </li>`).join('')}
 		</ul>
+
 	</body>
 	</html>`;
     fs.writeFile(filePath, html, (err) => {
-        if(err){
+        if (err) {
             console.log(err);
         }
     });
 }
+
+//check if a site exists by name
+function checkSite(req, res, next) {
+    Site.findOne({
+        name: req.body.name
+    }, (err, site) => {
+        if (err) {
+            return res.status(500).json({
+                message: err.message
+            });
+        }
+        if (site != null) {
+            return res.status(400).json({
+                message: 'Site already exists'
+            });
+        }
+        next();
+    });
+}
+
+// delete all HTML pages except index.html
+function deleteAllHTMLPages() {
+    const fs = require('fs');
+    const path = require('path');
+    const sites = fs.readdirSync(__dirname);
+    for (let i = 0; i < sites.length; i++) {
+        if (sites[i] != 'index.html' && sites[i].endsWith('html')) {
+            fs.unlink(path.join(__dirname, sites[i]), (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+}
+
 
 module.exports = router
