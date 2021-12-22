@@ -6,7 +6,7 @@ POST http://localhost:3000/sites
 Content-Type: application/json
 
 {
-    "name": "asdfasdas",
+    "name": "mese",
     "description": "kese",
     "imageURL": "shese"
 }
