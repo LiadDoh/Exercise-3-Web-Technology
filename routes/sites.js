@@ -24,7 +24,7 @@ router.post('/', checkSite, async(req, res) => {
     try {
         const newSite = await site.save();
         res.status(201).json(newSite);
-        createNewHTMLPage(newSite);
+        recreateAndAddNewHTMLPages(newSite);
     } catch (err) {
         res.status(400).json({
             message: err.message
@@ -102,7 +102,7 @@ async function getSite(req, res, next) {
 }
 
 //Creating a new HTML page
-async function createNewHTMLPage(site) {
+async function recreateAndAddNewHTMLPages(site) {
     const fs = require('fs');
     const path = require('path');
     const sites = await Site.find();
@@ -194,7 +194,7 @@ async function editHTMLPage(site) {
 	</html>`;
     fs.writeFile(filePath, html, (err) => {
         if (err) {
-            console.log(err);
+            console.log(err)
         }
     });
 }
@@ -220,14 +220,14 @@ function checkSite(req, res, next) {
 
 // delete all HTML pages except index.html
 function deleteAllHTMLPages() {
-    const fs = require('fs');
-    const path = require('path');
-    const sites = fs.readdirSync(__dirname);
+    const fs = require('fs')
+    const path = require('path')
+    const sites = fs.readdirSync(__dirname)
     for (let i = 0; i < sites.length; i++) {
         if (sites[i] != 'index.html' && sites[i].endsWith('html')) {
             fs.unlink(path.join(__dirname, sites[i]), (err) => {
                 if (err) {
-                    console.log(err);
+                    console.log(err)
                 }
             });
         }
@@ -236,4 +236,4 @@ function deleteAllHTMLPages() {
 }
 
 module.exports = router
-module.exports.editHTMLPage = editHTMLPage;
+module.exports.recreateAndAddNewHTMLPages = recreateAndAddNewHTMLPages;
