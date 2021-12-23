@@ -34,8 +34,11 @@ router.post('/', checkSite, async(req, res) => {
 
 //Updating a site
 router.patch('/:id', getSite, async(req, res) => {
+    let nameChanged = false;
     if (req.body.name != null) {
+        deleteHTMLPage(res.site);
         res.site.name = req.body.name;
+        nameChanged = true;
     }
     if (req.body.description != null) {
         res.site.description = req.body.description;
@@ -46,6 +49,10 @@ router.patch('/:id', getSite, async(req, res) => {
     try {
         const updatedSite = await res.site.save();
         res.json(updatedSite);
+        // if name changed, delete old HTML page and create new one
+        if (nameChanged) {
+            recreateAndAddNewHTMLPages(updatedSite);
+        }
     } catch (err) {
         res.status(400).json({
             message: err.message
@@ -140,7 +147,7 @@ async function recreateAndAddNewHTMLPages(site) {
             }
         });
     })
-    editHTMLPage(site)
+    editHTMLPage()
 }
 
 
@@ -154,11 +161,11 @@ function deleteHTMLPage(site) {
             console.log(err);
         }
     });
-    editHTMLPage(site);
+    editHTMLPage();
 }
 
 //find and edit HTML page
-async function editHTMLPage(site) {
+async function editHTMLPage() {
     const sites = await Site.find();
     const fs = require('fs');
     const path = require('path');

@@ -18,11 +18,11 @@ DELETE http://localhost:3000/sites/61c364a6e4f8f74a2f8d2573
 
 ### 
 
-PATCH http://localhost:3000/sites/61bb6f939897bf612a396dfb
+PATCH http://localhost:3000/sites/61c423c324114d090b6e5730
 Content-Type: application/json
 
 {
-    "name": "John",
+    "name": "Johny",
     "description": "ye",
     "imageURL": "se"
 }
