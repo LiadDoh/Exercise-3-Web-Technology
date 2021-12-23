@@ -1,31 +1,34 @@
+html,
 body {
-    height: 100%;
+    margin: 0;
+    height: 99%;
 }
 
 .index_body {
-    margin: 0px;
+    margin: 5px;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/1c/Sevan_Armenia_%D0%A1%D0%B5%D0%B2%D0%B0%D0%BD_%D0%90%D1%80%D0%BC%D0%B5%D0%BD%D0%B8%D1%8F.jpeg');
     background-repeat: no-repeat;
-    background-size: auto;
-    background-image: linear-gradient(red, yellow);
-    width: 100%;
-    height: 100%;
+    background-size: 100%;
 }
 
-.index_container {
-    width: 100%;
-    height: 100%;
+.container {
+    /*padding: 20px;*/
+    background-image: linear-gradient(#918D6F, #70916F);
+    margin: 20px 150px 20px 150px;
+    border: 2px solid black;
 }
 
-.site_container {
-    width: 100%;
-    height: 100%;
+.sites_body {
+    margin: 5px;
+    background-repeat: no-repeat;
+    background-size: 100%;
 }
 
 h1 {
     text-align: center;
     padding-bottom: 5px;
     color: #108B64;
-    border-bottom: 2px solid red;
+    border-bottom: 2px solid blueviolet;
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -36,15 +39,27 @@ h1 {
     font-family: verdana;
 }
 
+.list_content {
+    line-height: 300%;
+    font-size: 30px;
+    font-family: verdana;
+    text-decoration: none;
+}
+
 .list {
     padding: 5px;
     font-size: 16px;
     border: 3px;
     margin: 20px;
-}
-
-.hyperLinkList {
-    margin: 10px;
+    -moz-column-fill: balance;
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+    -webkit-column-fill: balance;
+    -webkit-column-count: 2;
+    -webkit-column-gap: 20px;
+    column-fill: balance;
+    column-count: 2;
+    column-gap: 20px;
 }
 
 
@@ -66,6 +81,8 @@ h1 {
     display: block;
     margin: auto;
     margin-bottom: 20px;
+    height: 500px;
+    width: 500px;
 }
 
 
@@ -96,6 +113,10 @@ h1 {
     color: black;
 }
 
+.topnav:hover .active {
+    background-color: #3e8e41;
+}
+
 
 /* Add a color to the active/current link */
 
@@ -119,7 +140,7 @@ h1 {
 /* The container <div> - needed to position the dropdown content */
 
 .dropdown {
-    /*position: relative;*/
+    /* position: relative; */
     display: inline-block;
 }
 
@@ -130,7 +151,6 @@ h1 {
     display: none;
     position: absolute;
     background-color: #F3F3F3;
-    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
@@ -143,6 +163,7 @@ h1 {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    border: 1px solid #3E8E41;
 }
 
 

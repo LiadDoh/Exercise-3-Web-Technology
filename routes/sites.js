@@ -19,12 +19,13 @@ router.post('/', checkSite, async(req, res) => {
     const site = new Site({
         name: req.body.name,
         description: req.body.description,
-        imageURL: req.body.imageURL
+        imageURL: req.body.imageURL,
+        backgroundImageURL: req.body.backgroundImageURL
     });
     try {
         const newSite = await site.save();
         res.status(201).json(newSite);
-        recreateAndAddNewHTMLPages(newSite);
+        recreateHTMLPages();
     } catch (err) {
         res.status(400).json({
             message: err.message
@@ -33,26 +34,25 @@ router.post('/', checkSite, async(req, res) => {
 });
 
 //Updating a site
-router.patch('/:id', getSite, async(req, res) => {
-    let nameChanged = false;
+router.patch('/:id', getSite, checkSite, async(req, res) => {
     if (req.body.name != null) {
         deleteHTMLPage(res.site);
         res.site.name = req.body.name;
-        nameChanged = true;
     }
     if (req.body.description != null) {
         res.site.description = req.body.description;
     }
     if (req.body.imageURL != null) {
-        res.site.ImageURL = req.body.imageURL;
+        res.site.imageURL = req.body.imageURL;
+    }
+    if (req.body.backgroundImageURL != null) {
+        res.site.backgroundImageURL = req.body.backgroundImageURL;
     }
     try {
         const updatedSite = await res.site.save();
         res.json(updatedSite);
         // if name changed, delete old HTML page and create new one
-        if (nameChanged) {
-            recreateAndAddNewHTMLPages(updatedSite);
-        }
+        recreateHTMLPages();
     } catch (err) {
         res.status(400).json({
             message: err.message
@@ -109,7 +109,7 @@ async function getSite(req, res, next) {
 }
 
 //Creating a new HTML page
-async function recreateAndAddNewHTMLPages(site) {
+async function recreateHTMLPages() {
     const fs = require('fs');
     const path = require('path');
     const sites = await Site.find();
@@ -121,23 +121,23 @@ async function recreateAndAddNewHTMLPages(site) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <link rel = "stylesheet" href = "./style.css" >
+            <link rel = "stylesheet" href = "./style/style.css" >
             <title>${site.name}</title>
         </head>
-        <body>
+        <body class="sites_body" style="background-image: url(${site.backgroundImageURL})">
             <div class = "topnav" >
             <a class="active" href="./index.html">Home</a>
                 <div class="dropdown">
                 <button class="dropbtn">Dropdown Menu</button>
                 <div class="dropdown-content">
-                        ${sites.map(site => `<a href="${site.name}.html">${site.name}</a>`).join('')}
+                        ${sites.map(thisSite => `<a href="${thisSite.name}.html">${thisSite.name}</a>`).join('')}
                 </div>
             </div>
         </div>
-        <div class = "site_container" style="background-image: url(${site.backgroundImageURL})">
+        <div class = "container">
             <h1>${site.name}</h1>  
-            <p>${site.description}</p>
-            <img src="${site.imageURL}" alt="${site.name}">
+            <div class="text">${site.description}</div>
+            <img class="subpic" src="${site.imageURL}" alt='Image not found' onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/32/Ferret_2008.png';">
         </div>
         </body>
         </html>`;
@@ -175,28 +175,30 @@ async function editHTMLPage() {
     <head>
     <title>Yese of Top 5 Beautiful Sites</title>
 	<meta charset = "UTF-8">
-	<meta name = "description" content = "Top 5 Most Beautiful Site">
+	<meta name = "description" content = "Top 5 Most Beautiful Sites">
 	<link rel = "icon"	href="https://upload.wikimedia.org/wikipedia/commons/b/b2/Sevel_Logo.png">
-	<link rel = "stylesheet" href = "./style.css" >
+	<link rel = "stylesheet" href = "./style/style.css" >
     </head>
     <body class = "index_body">
-    <div class = "topnav" >
-        <a class="active" href="./index.html">Home</a>
-            <div class="dropdown">
-			<button class="dropbtn">Dropdown Menu</button>
-			<div class="dropdown-content">
-                ${sites.map(site => `<a href="${site.name}.html">${site.name}</a>`).join('')}
-			</div>
-		</div>
-    </div>
-    <div class = "index_container">
-		<h1 >My Top 5 Most Beautiful Sites I Have Visited (Or Wish To Visit)</h1>
-		<ul class="list">
-        ${sites.map(site => `<li class="list-item">
-            <a href="${site.name}.html">${site.name}</a>
-        </li>`).join('')}
-		</ul>
-    </div>
+        <div class = "topnav" >
+            <a class="active" href="./index.html">Home</a>
+                <div class="dropdown">
+                <button class="dropbtn">Dropdown Menu</button>
+                <div class="dropdown-content">
+                    ${sites.map(site => `<a href="${site.name}.html">${site.name}</a>`).join('')}
+                </div>
+            </div>
+        </div>
+        <h1 >Top 5 Most Beautiful Sites</h1>
+        <div class = "container">
+            <ul class="list" style="list-style: none;">
+            ${sites.map(site => `<li class="list-item">
+                <a class="list_content" href="${site.name}.html">
+                <img src="${site.imageURL}" alt='Image not found' onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/b/b2/Sevel_Logo.png';" width='100' height='100'>
+                  ${site.name}</a>
+            </li>`).join('')}
+            </ul>
+        </div>
 	</body>
 	</html>`;
     fs.writeFile(filePath, html, (err) => {
@@ -208,6 +210,11 @@ async function editHTMLPage() {
 
 //check if a site exists by name
 function checkSite(req, res, next) {
+    if (req.body.name != null && req.body.name.length > 20) {
+        return res.status(400).json({
+            message: 'Site name is too long'
+        });
+    }
     Site.findOne({
         name: req.body.name
     }, (err, site) => {
@@ -242,5 +249,41 @@ function deleteAllHTMLPages() {
     editHTMLPage();
 }
 
+// Read sites from json to mongoDB
+async function readSitesFromJson() {
+    const fs = require('fs')
+    const path = require('path')
+    const filePath = path.join(__dirname, './five_sites/five_sites.json')
+    const data = fs.readFileSync(filePath, 'utf8')
+    const sites = JSON.parse(data)
+    sites.forEach(site => {
+        Site.findOne({
+            name: site.name
+        }, (err, foundSite) => {
+            if (foundSite) {
+
+            } else if (err) {
+                console.log(err)
+            } else {
+                const newSite = new Site({
+                    name: site.name,
+                    description: site.description,
+                    imageURL: site.imageURL,
+                    backgroundImageURL: site.backgroundImageURL
+                });
+                newSite.save((err) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                });
+            }
+        })
+    });
+    let promise = new Promise((resolve, reject) => {
+        setTimeout(() => resolve(recreateHTMLPages()), 1000)
+    });
+}
+
+
 module.exports = router
-module.exports.recreateAndAddNewHTMLPages = recreateAndAddNewHTMLPages;
+module.exports.readSitesFromJson = readSitesFromJson;

@@ -3,7 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
-const recreateAndAddNewHTMLPages = require('./routes/sites.js')
+const readSitesFromJson = require('./routes/sites.js')
 
 mongoose.connect(process.env.DATABASE_URL, {
     useNewUrlParser: true
@@ -19,5 +19,5 @@ app.use('/sites', sitesRouter)
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000')
-    sitesRouter.recreateAndAddNewHTMLPages()
+    sitesRouter.readSitesFromJson()
 })
