@@ -4,12 +4,24 @@
     <title>Yese of Top 5 Beautiful Sites</title>
 	<meta charset = "UTF-8">
 	<meta name = "description" content = "Top 5 Most Beautiful Sites">
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            var historyTraversal = event.persisted ||
+                (typeof window.performance != "undefined" &&
+                    window.performance.navigation.type === 2);
+            if (historyTraversal) {
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+    </script>
 	<link rel = "icon"	href="https://upload.wikimedia.org/wikipedia/commons/b/b2/Sevel_Logo.png">
 	<link rel = "stylesheet" href = "./style/style.css" >
     </head>
     <body class = "index_body">
         <div class = "topnav" >
             <a class="active" href="./index.html">Home</a>
+            <a class="active" href="./website_controller.html">Website Controller</a>
                 <div class="dropdown">
                 <button class="dropbtn">Dropdown Menu</button>
                 <div class="dropdown-content">

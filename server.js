@@ -1,4 +1,5 @@
 require('dotenv').config()
+var cors = require('cors')
 
 const express = require('express')
 const app = express()
@@ -11,6 +12,8 @@ mongoose.connect(process.env.DATABASE_URL, {
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => console.log('Connected to MongoDB'))
+
+app.use(cors())
 
 app.use(express.json())
 

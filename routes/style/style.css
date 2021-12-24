@@ -11,6 +11,13 @@ body {
     background-size: 100%;
 }
 
+.controller_body {
+    margin: 5px;
+    background-image: url('https://c.tenor.com/gZ5zDNNSqhAAAAAC/do-it-yourself-tools.gif');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
 .container {
     /*padding: 20px;*/
     background-image: linear-gradient(#918D6F, #70916F);
@@ -29,6 +36,14 @@ h1 {
     padding-bottom: 5px;
     color: #108B64;
     border-bottom: 2px solid blueviolet;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+h2 {
+    text-align: center;
+    padding-bottom: 5px;
+    color: #108B64;
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -60,6 +75,13 @@ h1 {
     column-fill: balance;
     column-count: 2;
     column-gap: 20px;
+}
+
+.console_list {
+    padding: 5px;
+    font-size: 16px;
+    border: 3px;
+    margin: 20px;
 }
 
 
@@ -113,7 +135,7 @@ h1 {
     color: black;
 }
 
-.topnav:hover .active {
+.topnav .active:hover {
     background-color: #3e8e41;
 }
 
@@ -123,6 +145,7 @@ h1 {
 .topnav a.active {
     background-color: #04AA6D;
     color: white;
+    border: 1px solid black;
 }
 
 
@@ -133,7 +156,7 @@ h1 {
     color: white;
     padding: 14px;
     font-size: 17px;
-    border: none;
+    border: 1px solid black;
 }
 
 

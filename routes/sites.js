@@ -33,6 +33,12 @@ router.post('/', checkSite, async(req, res) => {
     }
 });
 
+// Get site by name
+router.get('/:name', getSiteByName, (req, res) => {
+    res.json(res.site);
+});
+
+
 //Updating a site
 router.patch('/:id', getSite, checkSite, async(req, res) => {
     if (req.body.name != null) {
@@ -108,6 +114,28 @@ async function getSite(req, res, next) {
     next();
 }
 
+// Get site by name
+async function getSiteByName(req, res, next) {
+    let site;
+    try {
+        site = await Site.findOne({
+            name: req.params.name
+        });
+        if (site == null) {
+            return res.status(404).json({
+                message: 'Cannot find site'
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            message: err.message
+        });
+    }
+    res.site = site;
+    next();
+}
+
+
 //Creating a new HTML page
 async function recreateHTMLPages() {
     const fs = require('fs');
@@ -176,12 +204,24 @@ async function editHTMLPage() {
     <title>Yese of Top 5 Beautiful Sites</title>
 	<meta charset = "UTF-8">
 	<meta name = "description" content = "Top 5 Most Beautiful Sites">
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            var historyTraversal = event.persisted ||
+                (typeof window.performance != "undefined" &&
+                    window.performance.navigation.type === 2);
+            if (historyTraversal) {
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+    </script>
 	<link rel = "icon"	href="https://upload.wikimedia.org/wikipedia/commons/b/b2/Sevel_Logo.png">
 	<link rel = "stylesheet" href = "./style/style.css" >
     </head>
     <body class = "index_body">
         <div class = "topnav" >
             <a class="active" href="./index.html">Home</a>
+            <a class="active" href="./website_controller.html">Website Controller</a>
                 <div class="dropdown">
                 <button class="dropbtn">Dropdown Menu</button>
                 <div class="dropdown-content">
@@ -215,6 +255,11 @@ function checkSite(req, res, next) {
             message: 'Site name is too long'
         });
     }
+    if (req.body.name === "index" || req.body.name === "website_controller") {
+        return res.status(400).json({
+            message: 'Site name cannot be index or website_controller'
+        });
+    }
     Site.findOne({
         name: req.body.name
     }, (err, site) => {
@@ -238,7 +283,7 @@ function deleteAllHTMLPages() {
     const path = require('path')
     const sites = fs.readdirSync(__dirname)
     for (let i = 0; i < sites.length; i++) {
-        if (sites[i] != 'index.html' && sites[i].endsWith('html')) {
+        if (sites[i] != 'index.html' && sites[i].endsWith('html') && sites[i] != 'website_controller.html') {
             fs.unlink(path.join(__dirname, sites[i]), (err) => {
                 if (err) {
                     console.log(err)

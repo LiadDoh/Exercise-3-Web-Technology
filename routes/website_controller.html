@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Website REST Controller</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Top 5 Most Beautiful Sites">
+    <script src="jquery.js"></script>
+    <script>
+        // Get json data from localhost:3000/sites and display it in the list on get request
+        $(document).ready(function() {
+            $(".getSites").click(function() {
+                $("h2").text("List of All Sites")
+                $.getJSON("http://localhost:3000/sites", function(data) {
+                    $("ul").empty();
+                    $.each(data, function(key, value) {
+                        // Add each site to the list
+                        $("ul").append("<li> Site Name:" + value.name + "<br>Site ID:" +
+                            value._id + "<br><br></li>");
+                    });
+                });
+            });
+
+            // Get site by Name
+            $("#getSite").on('submit', function(e) {
+                e.preventDefault();
+                var siteName = $("#siteName").val();
+                console.log(siteName);
+                $.getJSON("http://localhost:3000/sites/" + siteName, function(data) {
+                    $("ul").empty();
+                    console.log(data);
+                    if (typeof data !== 'undefined' && siteName !== "") {
+                        $("h2").text(siteName + " Details")
+                        $("ul").append("<li> Site Name:" + JSON.stringify(data
+                                .name) +
+                            "<br><br>Site ID:" + JSON.stringify(data._id) +
+                            "<br><br>Site Description:" +
+                            JSON.stringify(data.description) + "<br><br>Site Image:" +
+                            JSON
+                            .stringify(data.image) +
+                            "<br><br></li>");
+                    } else {
+                        $("h2").text("No Site Name Was Given!")
+                    }
+                });
+            });
+
+            // Delete site by ID
+            $("#deleteSite").on('submit', function(e) {
+                e.preventDefault();
+                var siteID = $("#siteID").val();
+                console.log(siteID);
+                $.ajax({
+                    url: "http://localhost:3000/sites/" + siteID,
+                    type: "DELETE",
+                    success: function(result) {
+                        $("h2").text("Site Deleted!")
+                    }
+                });
+            });
+
+
+            $(".deleteSites").click(function() {
+                $("h2").empty();
+                // Delete all sites from the list
+                $.ajax({
+                    url: "http://localhost:3000/sites",
+                    type: "DELETE",
+                    success: function(e) {
+                        e.preventDefault();
+                        $("ul").empty();
+                        $("ul").append("<li>All sites have been deleted</li>");
+                    }
+                });
+            });
+        });
+    </script>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/1/14/Gears_animation.gif">
+    <link rel="stylesheet" href="./style/style.css">
+</head>
+
+<body class="controller_body">
+    <div class="topnav">
+        <a class="active" href="./index.html">Home</a>
+    </div>
+    <button class="getSites">Get All Sites</button>
+    <button class="deleteSites" style="background-color: red;">Delete All Sites</button>
+
+
+    <form id="getSite">
+        <label for="siteName">Site Name to Get:</label>
+        <input type="text" id="siteName" name="siteName" placeholder="Site Name">
+        <input type='submit'>
+    </form>
+
+    <form id="deleteSite">
+        <label for="siteName">Site ID to Delete:</label>
+        <input type="text" id="siteID" name="siteID" placeholder="Site Name">
+        <input type='submit'>
+    </form>
+
+    <div class="container">
+        <h2></h2>
+        <ul class="console_list" style="list-style: none;">
+
+        </ul>
+    </div>
+</body>
+
+</html>
