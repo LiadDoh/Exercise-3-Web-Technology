@@ -49,14 +49,16 @@
             $("#deleteSite").on('submit', function(e) {
                 e.preventDefault();
                 var siteID = $("#siteID").val();
-                console.log(siteID);
-                $.ajax({
-                    url: "http://localhost:3000/sites/" + siteID,
-                    type: "DELETE",
-                    success: function(result) {
-                        $("h2").text("Site Deleted!")
-                    }
-                });
+                if (siteID !== "") {
+                    $.ajax({
+                        url: "http://localhost:3000/sites/" + siteID,
+                        type: "DELETE",
+                        success: function(result) {
+                            $("h2").text("Site Deleted!")
+                        }
+                    });
+                }
+
             });
 
 
@@ -72,6 +74,81 @@
                         $("ul").append("<li>All sites have been deleted</li>");
                     }
                 });
+            });
+
+
+            // Post site to localhost:3000/sites
+            $("#postSite").on('submit', function(e) {
+                e.preventDefault();
+                var siteName = $("#siteCreateName").val();
+                var siteDescription = $("#siteCreateDesc").val();
+                var siteImage = $("#siteCreateImage").val();
+                var siteBackgroundImage = $("#siteCreateBackGroundImage").val();
+                if (siteName !== "" && siteDescription !== "" && siteImage !== "") {
+                    if (siteBackgroundImage === "") {
+                        siteBackgroundImage =
+                            "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
+                    }
+                    $.ajax({
+                        url: "http://localhost:3000/sites",
+                        data: JSON.stringify({
+                            "name": siteName,
+                            "description": siteDescription,
+                            "imageURL": siteImage,
+                            "backgroundImage": siteBackgroundImage
+                        }),
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        error: function(error) {
+                            console.log(error);
+                        },
+
+                        success: function(result) {
+                            $("h2").text("Site Created!")
+                        }
+                    });
+                } else {
+                    $("h2").text("Please fill in all fields!")
+                }
+            });
+
+            // Patch site by Name
+            $("#patchSite").on('submit', function(e) {
+                e.preventDefault();
+                var siteId = $("#patchedSiteID").val();
+                var siteName = $("#sitePatchName").val();
+                var siteDescription = $("#sitePatchDesc").val();
+                var siteImage = $("#sitePatchDesc").val();
+                var siteBackgroundImage = $("#sitePatchBackGroundImage").val();
+                if (siteName !== "" && siteDescription !== "" && siteImage !== "") {
+                    if (siteBackgroundImage === "") {
+                        siteBackgroundImage =
+                            "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
+                    }
+                    console.log(siteId);
+                    $.ajax({
+                        url: "http://localhost:3000/sites/" + siteId,
+                        data: JSON.stringify({
+                            "name": siteName,
+                            "description": siteDescription,
+                            "imageURL": siteImage,
+                            "backgroundImage": siteBackgroundImage
+                        }),
+                        type: "PATCH",
+                        contentType: "application/json",
+                        dataType: "json",
+                        error: function(error) {
+                            console.log(error);
+                        },
+
+                        success: function(result) {
+                            $("h2").text("Site Updated!")
+                        }
+                    });
+                } else {
+                    $("h2").text("Please fill in all fields!")
+                }
             });
         });
     </script>
@@ -90,13 +167,41 @@
     <form id="getSite">
         <label for="siteName">Site Name to Get:</label>
         <input type="text" id="siteName" name="siteName" placeholder="Site Name">
-        <input type='submit'>
+        <input type='submit' value="Get Site">
     </form>
 
     <form id="deleteSite">
-        <label for="siteName">Site ID to Delete:</label>
+        <label for="siteID">Site ID to Delete:</label>
         <input type="text" id="siteID" name="siteID" placeholder="Site Name">
-        <input type='submit'>
+        <input type='submit' value="Delete Site">
+    </form>
+
+    <form id="postSite">
+        <p>Site Creation Form</p>
+        <label for="siteCreateName">Name of Site:</label>
+        <input type="text" id="siteCreateName" name="siteCreateName" placeholder="Site Name">
+        <label for="siteCreateDesc">Descriptions of Site:</label>
+        <input type="text" id="siteCreateDesc" name="siteCreateDesc" placeholder="Site Description">
+        <label for="siteCreateImage">Image of Site:</label>
+        <input type="text" id="siteCreateImage" name="siteCreateImage" placeholder="Site Image">
+        <label for="siteCreateBackGroundImage">Background Image of Site:</label>
+        <input type="text" id="siteCreateBackGroundImage" name="siteCreateBackGroundImage" placeholder="Site Background Image">
+        <input type='submit' value="Post New Site">
+    </form>
+
+    <form id="patchSite">
+        <p>Site Patching Form</p>
+        <label for="patchedSiteID">Original Name of Site:</label>
+        <input type="text" id="patchedSiteID" name="patchedSiteID" placeholder="Site ID">
+        <label for="sitePatchName">Name of Site:</label>
+        <input type="text" id="sitePatchName" name="sitePatchName" placeholder="Patched Site Name">
+        <label for="sitePatchDesc">Descriptions of Site:</label>
+        <input type="text" id="sitePatchDesc" name="sitePatchDesc" placeholder="Patched Site Description">
+        <label for="sitePatchImage">Image of Site:</label>
+        <input type="text" id="sitePatchImage" name="sitePatchImage" placeholder="Patched Site Image">
+        <label for="sitePatchBackGroundImage">Background Image of Site:</label>
+        <input type="text" id="sitePatchBackGroundImage" name="sitePatchBackGroundImage" placeholder="Patched Site Background Image">
+        <input type='submit' value="Patch Site">
     </form>
 
     <div class="container">
