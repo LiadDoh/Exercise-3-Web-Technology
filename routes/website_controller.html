@@ -5,153 +5,8 @@
     <title>Website REST Controller</title>
     <meta charset="UTF-8">
     <meta name="description" content="Top 5 Most Beautiful Sites">
-    <script src="jquery.js"></script>
-    <script>
-        // Get json data from localhost:3000/sites and display it in the list on get request
-        $(document).ready(function() {
-            $(".getSites").click(function() {
-                $("h2").text("List of All Sites")
-                $.getJSON("http://localhost:3000/sites", function(data) {
-                    $("ul").empty();
-                    $.each(data, function(key, value) {
-                        // Add each site to the list
-                        $("ul").append("<li> Site Name:" + value.name + "<br>Site ID:" +
-                            value._id + "<br><br></li>");
-                    });
-                });
-            });
-
-            // Get site by Name
-            $("#getSite").on('submit', function(e) {
-                e.preventDefault();
-                var siteName = $("#siteName").val();
-                console.log(siteName);
-                $.getJSON("http://localhost:3000/sites/" + siteName, function(data) {
-                    $("ul").empty();
-                    console.log(data);
-                    if (typeof data !== 'undefined' && siteName !== "") {
-                        $("h2").text(siteName + " Details")
-                        $("ul").append("<li> Site Name:" + JSON.stringify(data
-                                .name) +
-                            "<br><br>Site ID:" + JSON.stringify(data._id) +
-                            "<br><br>Site Description:" +
-                            JSON.stringify(data.description) + "<br><br>Site Image:" +
-                            JSON
-                            .stringify(data.image) +
-                            "<br><br></li>");
-                    } else {
-                        $("h2").text("No Site Name Was Given!")
-                    }
-                });
-            });
-
-            // Delete site by ID
-            $("#deleteSite").on('submit', function(e) {
-                e.preventDefault();
-                var siteID = $("#siteID").val();
-                if (siteID !== "") {
-                    $.ajax({
-                        url: "http://localhost:3000/sites/" + siteID,
-                        type: "DELETE",
-                        success: function(result) {
-                            $("h2").text("Site Deleted!")
-                        }
-                    });
-                }
-
-            });
-
-
-            $(".deleteSites").click(function() {
-                $("h2").empty();
-                // Delete all sites from the list
-                $.ajax({
-                    url: "http://localhost:3000/sites",
-                    type: "DELETE",
-                    success: function(e) {
-                        e.preventDefault();
-                        $("ul").empty();
-                        $("ul").append("<li>All sites have been deleted</li>");
-                    }
-                });
-            });
-
-
-            // Post site to localhost:3000/sites
-            $("#postSite").on('submit', function(e) {
-                e.preventDefault();
-                var siteName = $("#siteCreateName").val();
-                var siteDescription = $("#siteCreateDesc").val();
-                var siteImage = $("#siteCreateImage").val();
-                var siteBackgroundImage = $("#siteCreateBackGroundImage").val();
-                if (siteName !== "" && siteDescription !== "" && siteImage !== "") {
-                    if (siteBackgroundImage === "") {
-                        siteBackgroundImage =
-                            "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
-                    }
-                    $.ajax({
-                        url: "http://localhost:3000/sites",
-                        data: JSON.stringify({
-                            "name": siteName,
-                            "description": siteDescription,
-                            "imageURL": siteImage,
-                            "backgroundImage": siteBackgroundImage
-                        }),
-                        type: "POST",
-                        contentType: "application/json",
-                        dataType: "json",
-                        error: function(error) {
-                            console.log(error);
-                        },
-
-                        success: function(result) {
-                            $("h2").text("Site Created!")
-                        }
-                    });
-                } else {
-                    $("h2").text("Please fill in all fields!")
-                }
-            });
-
-            // Patch site by Name
-            $("#patchSite").on('submit', function(e) {
-                e.preventDefault();
-                var siteId = $("#patchedSiteID").val();
-                var siteName = $("#sitePatchName").val();
-                var siteDescription = $("#sitePatchDesc").val();
-                var siteImage = $("#sitePatchDesc").val();
-                var siteBackgroundImage = $("#sitePatchBackGroundImage").val();
-                if (siteName !== "" && siteDescription !== "" && siteImage !== "") {
-                    if (siteBackgroundImage === "") {
-                        siteBackgroundImage =
-                            "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
-                    }
-                    console.log(siteId);
-                    $.ajax({
-                        url: "http://localhost:3000/sites/" + siteId,
-                        data: JSON.stringify({
-                            "name": siteName,
-                            "description": siteDescription,
-                            "imageURL": siteImage,
-                            "backgroundImage": siteBackgroundImage
-                        }),
-                        type: "PATCH",
-                        contentType: "application/json",
-                        dataType: "json",
-                        error: function(error) {
-                            console.log(error);
-                        },
-
-                        success: function(result) {
-                            $("h2").text("Site Updated!")
-                        }
-                    });
-                } else {
-                    $("h2").text("Please fill in all fields!")
-                }
-            });
-        });
-    </script>
+    <script src="./jquery.js"></script>
+    <script src="./website_controller.js" async></script>
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/1/14/Gears_animation.gif">
     <link rel="stylesheet" href="./style/style.css">
 </head>
@@ -159,53 +14,72 @@
 <body class="controller_body">
     <div class="topnav">
         <a class="active" href="./index.html">Home</a>
+        <div class="dropdown">
+            <button class="dropbtn">REST Commands</button>
+            <div class="dropdown-content">
+                <button id="get_commands" class="getAllSites">Get All Sites</button>
+                <button id="get_commands" class="getSite">Get Specific Site</button>
+                <button id="get_commands" class="postSite">Post Site</button>
+                <button id="get_commands" class="patchSite">Patch Site</button>
+                <button id="get_commands" class="deleteSite">Delete Specific Site</button>
+                <button id="get_commands" class="deleteSites">Delete All Sites</button>
+            </div>
+        </div>
     </div>
-    <button class="getSites">Get All Sites</button>
-    <button class="deleteSites" style="background-color: red;">Delete All Sites</button>
+
+    <div class="forms">
+        <button class="controller_button" id="getSites">Get All Sites</button>
+
+        <button class="controller_button" id="deleteSites" style="background-color: red;">Delete All Sites</button>
 
 
-    <form id="getSite">
-        <label for="siteName">Site Name to Get:</label>
-        <input type="text" id="siteName" name="siteName" placeholder="Site Name">
-        <input type='submit' value="Get Site">
-    </form>
 
-    <form id="deleteSite">
-        <label for="siteID">Site ID to Delete:</label>
-        <input type="text" id="siteID" name="siteID" placeholder="Site Name">
-        <input type='submit' value="Delete Site">
-    </form>
+        <form class="controller_action" id="getSite">
+            <label for="siteName">Site Name to Get:</label>
+            <input type="text" id="siteName" name="siteName" placeholder="Site Name">
+            <input class="controller_button" type='submit' value="Get Site">
+        </form>
 
-    <form id="postSite">
-        <p>Site Creation Form</p>
-        <label for="siteCreateName">Name of Site:</label>
-        <input type="text" id="siteCreateName" name="siteCreateName" placeholder="Site Name">
-        <label for="siteCreateDesc">Descriptions of Site:</label>
-        <input type="text" id="siteCreateDesc" name="siteCreateDesc" placeholder="Site Description">
-        <label for="siteCreateImage">Image of Site:</label>
-        <input type="text" id="siteCreateImage" name="siteCreateImage" placeholder="Site Image">
-        <label for="siteCreateBackGroundImage">Background Image of Site:</label>
-        <input type="text" id="siteCreateBackGroundImage" name="siteCreateBackGroundImage" placeholder="Site Background Image">
-        <input type='submit' value="Post New Site">
-    </form>
+        <form class="controller_action" id="deleteSite">
+            <label for="siteID">Site ID to Delete:</label>
+            <input type="text" id="siteID" name="siteID" placeholder="Site Name">
+            <input class="controller_button" type='submit' value="Delete Site">
+        </form>
 
-    <form id="patchSite">
-        <p>Site Patching Form</p>
-        <label for="patchedSiteID">Original Name of Site:</label>
-        <input type="text" id="patchedSiteID" name="patchedSiteID" placeholder="Site ID">
-        <label for="sitePatchName">Name of Site:</label>
-        <input type="text" id="sitePatchName" name="sitePatchName" placeholder="Patched Site Name">
-        <label for="sitePatchDesc">Descriptions of Site:</label>
-        <input type="text" id="sitePatchDesc" name="sitePatchDesc" placeholder="Patched Site Description">
-        <label for="sitePatchImage">Image of Site:</label>
-        <input type="text" id="sitePatchImage" name="sitePatchImage" placeholder="Patched Site Image">
-        <label for="sitePatchBackGroundImage">Background Image of Site:</label>
-        <input type="text" id="sitePatchBackGroundImage" name="sitePatchBackGroundImage" placeholder="Patched Site Background Image">
-        <input type='submit' value="Patch Site">
-    </form>
+        <form class="controller_action" id="postSite">
+            <p class="title">Site Creation Form</p>
+            <label for="siteCreateName">Name of Site:</label>
+            <input type="text" id="siteCreateName" name="siteCreateName" placeholder="Site Name">
+            <label for="siteCreateDesc">&emsp;&emsp;Descriptions of Site:</label>
+            <input type="text" id="siteCreateDesc" name="siteCreateDesc" placeholder="Site Description">
+            <br><br>
+            <label for="siteCreateImage">Image of Site:</label>
+            <input type="text" id="siteCreateImage" name="siteCreateImage" placeholder="Site Image">
+            <label for="siteCreateBackGroundImage">&emsp;&emsp;Background Image of Site:</label>
+            <input type="text" id="siteCreateBackGroundImage" name="siteCreateBackGroundImage" placeholder="Site Background Image">
+            <input class="controller_button" type='submit' value="Post New Site">
+        </form>
 
-    <div class="container">
-        <h2></h2>
+        <form class="controller_action" id="patchSite">
+            <p class="title">Site Patching Form</p>
+            <label for="patchedSiteID">Site ID:</label>
+            <input type="text" id="patchedSiteID" name="patchedSiteID" placeholder="Site ID">
+            <label for="sitePatchName">&emsp;&emsp;Name of Site:</label>
+            <input type="text" id="sitePatchName" name="sitePatchName" placeholder="Site Name">
+            <label for="sitePatchDesc">&emsp;&emsp;Descriptions of Site:</label>
+            <br><br>
+            <input type="text" id="sitePatchDesc" name="sitePatchDesc" placeholder="Site Description">
+            <label for="sitePatchImage">Image of Site:</label>
+            <input type="text" id="sitePatchImage" name="sitePatchImage" placeholder="Site Image">
+            <label for="sitePatchBackGroundImage" &nbsp>&emsp;&emsp;Background Image of Site:</label>
+            <input type="text" id="sitePatchBackGroundImage" name="sitePatchBackGroundImage" placeholder="Site Background Image">
+            <input class="controller_button" type='submit' value="Patch Site">
+        </form>
+    </div>
+
+
+    <div class="container" id="spacing">
+        <h2>Output</h2>
         <ul class="console_list" style="list-style: none;">
 
         </ul>
